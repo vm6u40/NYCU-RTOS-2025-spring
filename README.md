@@ -3,8 +3,8 @@
 # μC/OS-II on Altera NIOS II
 
 ## Scheduling Algorithms Implemented
-lab1: Periodic Task Emulation
-lab2: EDF Scheduler
+lab1: Periodic Task Emulation  
+lab2: EDF Scheduler  
 
 ## Resource Synchronization Protocol
 lab3: Ceiling Priority Protocol
