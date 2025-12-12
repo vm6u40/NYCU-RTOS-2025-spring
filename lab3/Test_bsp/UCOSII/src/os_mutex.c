@@ -14,7 +14,7 @@
 * LICENSING TERMS:
 * ---------------
 *   uC/OS-II is provided in source form for FREE evaluation, for educational use or for peaceful research.  
-* If you plan on using  uC/OS-II  in a commercial product you need to contact Micriµm to properly license 
+* If you plan on using  uC/OS-II  in a commercial product you need to contact Micriç—  to properly license 
 * its use in your product. We provide ALL the source code for your convenience and to help you experience 
 * uC/OS-II.   The fact that the  source is provided does  NOT  mean that you can use it without  paying a 
 * licensing fee.
@@ -436,24 +436,20 @@ void  OSMutexPend (OS_EVENT *pevent, INT16U timeout, INT8U *perr)
     OS_ENTER_CRITICAL();
     pip = (INT8U)(pevent->OSEventCnt >> 8);                /* Get PIP from mutex                       */
                                                            /* Is Mutex available?                      */
-    if ((INT8U)(pevent->OSEventCnt & OS_MUTEX_KEEP_LOWER_8) == OS_MUTEX_AVAILABLE) {
-    	//1) ¦pªG·í«emutexªºÀu¥ýÅv¤ñ·í«e¥ô°È¤j
+    if ((INT8U)(pevent->OSEventCnt & OS_MUTEX_KEEP_LOWER_8) == OS_MUTEX_AVAILABLE) {    	
+		//1)è¨˜éŒ„ç•¶å‰ä»»å‹™çš„ã€ŒåŽŸæœ¬å„ªå…ˆæ¬Šã€
     	OSTCBCur->OSTCBOriginalPrioStack[OSTCBCur->OSTCBMutexNestCnt++] = OSTCBCur->OSTCBPrio;
-    		if(pip<OSTCBCur->OSTCBPrio){
-    			//1-1)°O¿ý·í«e¥ô°Èªº¡u­ì¥»Àu¥ýÅv¡v
-
-
-
-				//1-2) ±qÂÂªº ready queue §â¦Û¤v²¾°£
+		//2) å¦‚æžœç•¶å‰mutexçš„å„ªå…ˆæ¬Šæ¯”ç•¶å‰ä»»å‹™å¤§
+    		if(pip<OSTCBCur->OSTCBPrio){		
+				//2-1) å¾žèˆŠçš„ready queueæŠŠç•¶å‰çš„taskç§»é™¤
 				INT8U oldY = OSTCBCur->OSTCBY;
 				INT8U oldX = OSTCBCur->OSTCBX;
 				OSRdyTbl[oldY] &= ~(1 << oldX);
 				if (OSRdyTbl[oldY] == 0) {
 					OSRdyGrp &= ~(1 << oldY);
 				}
-				OSTCBPrioTbl[OSTCBCur->OSTCBPrio] = (OS_TCB *)0;  // ¤£¦A¦û¥ÎÂÂ prio
-
-				//1-3) ´£¤É¨ì pip
+				OSTCBPrioTbl[OSTCBCur->OSTCBPrio] = (OS_TCB *)0;  // ä¸å†ä½”ç”¨èˆŠpriority
+				//2-2) æå‡ç•¶å‰taskçš„priorityåˆ°pip
 				OSTCBCur->OSTCBPrio = pip;
 			#if OS_LOWEST_PRIO <= 63
 				OSTCBCur->OSTCBY    = (INT8U)( pip >> 3 );
@@ -461,19 +457,18 @@ void  OSMutexPend (OS_EVENT *pevent, INT16U timeout, INT8U *perr)
 				OSTCBCur->OSTCBBitY = (INT8U)(1 << OSTCBCur->OSTCBY);
 				OSTCBCur->OSTCBBitX = (INT8U)(1 << OSTCBCur->OSTCBX);
 			#endif
-
-				//1-4) ¥[¤J·sªº ready queue
+				//2-3) åŠ å…¥æ–°çš„ ready queue
 				OSRdyGrp                      |= OSTCBCur->OSTCBBitY;
 				OSRdyTbl[OSTCBCur->OSTCBY]   |= OSTCBCur->OSTCBBitX;
 				OSTCBPrioTbl[pip]            = OSTCBCur;
     		}
-			// 2) §ó·smutex ª¬ºA
-			pevent->OSEventPtr = (void *)OSTCBCur;
-			pevent->OSEventCnt &= OS_MUTEX_KEEP_UPPER_8;  // ²M±¼§C 8 bits
-			pevent->OSEventCnt |= OSTCBCur->OSTCBPrio;    // °O¿ý¡u¥Ø«eÀu¥ýÅv¡v(pip/prio) ¦b§C 8 bits
+			// 3) æ›´æ–°mutexç‹€æ…‹
+			pevent->OSEventPtr = (void *)OSTCBCur;        // ç´€éŒ„æ“æœ‰mutexçš„tcb
+			pevent->OSEventCnt &= OS_MUTEX_KEEP_UPPER_8;  // clearä½Ž 8 bits
+			pevent->OSEventCnt |= OSTCBCur->OSTCBPrio;    // åœ¨ä½Ž 8 bitsè¨˜éŒ„æå‡å¾Œçš„priority
 
     	    OS_EXIT_CRITICAL();
-    	    OS_Sched(); // ­Y·Q°¨¤WÀË¬d­n¤£­n¤Á¨«
+    	    OS_Sched(); // é¦¬ä¸Šæª¢æŸ¥è¦ä¸è¦é€²è¡Œcontext switch
     	    *perr = OS_ERR_NONE;
     	    return;
     }
@@ -648,12 +643,12 @@ INT8U  OSMutexPost (OS_EVENT *pevent)
             OSMutex_RdyAtPrio(OSTCBCur, newEff);
         }
 
-        // ²M°£ mutex ª¬ºA¡A±N mutex ¼Ð°O¬° available
+        // æ¸…é™¤ mutex ç‹€æ…‹ï¼Œå°‡ mutex æ¨™è¨˜ç‚º available
         pevent->OSEventPtr = (void *)0;
         pevent->OSEventCnt &= OS_MUTEX_KEEP_UPPER_8;
         pevent->OSEventCnt |= OS_MUTEX_AVAILABLE;
 
-        // ¦pªG¦³¥ô°Èµ¥«Ý mutex¡A³ê¿ô¨ä¤¤³Ì°ªÀu¥ýÅvªº¥ô°È
+        // å¦‚æžœæœ‰ä»»å‹™ç­‰å¾… mutexï¼Œå–šé†’å…¶ä¸­æœ€é«˜å„ªå…ˆæ¬Šçš„ä»»å‹™
         if (pevent->OSEventGrp != 0) {
             prio = OS_EventTaskRdy(pevent, (void *)0, OS_STAT_MUTEX, OS_STAT_PEND_OK);
             pevent->OSEventCnt &= OS_MUTEX_KEEP_UPPER_8;
