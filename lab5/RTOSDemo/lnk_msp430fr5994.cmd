@@ -150,7 +150,7 @@ SECTIONS
         GROUP(READ_WRITE_MEMORY)
         {
 
-            .TI.persistent : {}              /* For #pragma persistent            */
+            .TI.persistent : {} > FRAM2      /* For #pragma persistent            */
             .cio           : {}              /* C I/O Buffer                      */
             .sysmem        : {}              /* Dynamic memory allocation area    */
         } PALIGN(0x0400), RUN_START(fram_rw_start)
